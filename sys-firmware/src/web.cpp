@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include <ESP8266HTTPClient.h>
 
 namespace Web {
 ESP8266WiFiMulti wifi_multi;
@@ -55,8 +56,15 @@ void create_server() {
 
 void clean_server() { server.close(); }
 
+HTTPClient client;
 void send_discord(const char *name, const char *content) {
+  char send_buffer[200];
   JsonDocument data;
   data["username"] = name;
   data["content"] = content;
+  serializeJson(data, send_buffer);
+  client.begin(discord_hook);
+  client.addHeader("Content-Type", "application/json");
+  client.POST(send_buffer);
+  client.end();
 }
