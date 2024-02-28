@@ -44,6 +44,19 @@ void create_server() {
   server.begin();
   server.on("/", HTTP_GET,
             []() { server.send(200, "text/plain", "Test Message"); });
+  {
+    char msg_buffer[100];
+    sprintf(msg_buffer,
+            "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
+            get_SSID(), get_local_IP());
+    send_discord("Moisture Monitor 8266 - system", msg_buffer);
+  }
 }
 
 void clean_server() { server.close(); }
+
+void send_discord(const char *name, const char *content) {
+  JsonDocument data;
+  data["username"] = name;
+  data["content"] = content;
+}
