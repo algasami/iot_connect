@@ -14,7 +14,14 @@ struct Router {
   char ssid[50];
   char password[50];
 };
+
+struct Settings {
+  uint32_t update_sec = 30;
+  bool update_on_change = false;
+};
 constexpr size_t ROUTER_SIZE = 2;
+
+extern Settings mysettings;
 
 namespace Web {
 extern ESP8266WiFiMulti wifi_multi;

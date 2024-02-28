@@ -1,5 +1,7 @@
 #include "utils.hpp"
 
+Settings mysettings;
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);

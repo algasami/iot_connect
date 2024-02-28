@@ -43,8 +43,26 @@ void handle_wifi() {
 
 void create_server() {
   server.begin();
-  server.on("/", HTTP_GET,
-            []() { server.send(200, "text/plain", "Test Message"); });
+  server.on("/", HTTP_GET, []() {
+    char buffer[200];
+    JsonDocument res;
+    res["moisture"] = 1.0;
+    res["approved"] = true;
+    serializeJson(res, buffer);
+    server.send(200, "application/json", buffer);
+  });
+  server.on("/settings", HTTP_POST, []() {
+    // ! ugly code (I NEED TO FIX THIS!!! maybe via SCHEMA)
+    if (server.hasArg("update_sec")) {
+      mysettings.update_sec = server.arg("update_sec").toInt();
+    }
+    if (server.hasArg("update_on_change")) {
+      const char *str = server.arg("update_on_change").c_str();
+      mysettings.update_on_change =
+          strcmp(server.arg("update_on_change").c_str(), "true") ? false : true;
+    }
+    server.send(201, "text/plain", "success");
+  });
   {
     char msg_buffer[100];
     sprintf(msg_buffer,
