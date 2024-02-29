@@ -15,6 +15,7 @@ struct Router {
   char password[50];
 };
 
+// ! How do we add a schema for the settings?
 struct Settings {
   uint32_t update_sec = 30;
   bool update_on_change = false;

@@ -41,6 +41,13 @@ void handle_wifi() {
   }
 }
 
+/**
+ * @brief initialize the server with the following routes:
+ * 1. / - GET - returns the moisture and approved status
+ * 2. /settings - POST - updates the settings
+ *
+ * Caveat: the settings are not validated. We will need to add a schema for it.
+ */
 void create_server() {
   server.begin();
   server.on("/", HTTP_GET, []() {
