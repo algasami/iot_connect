@@ -3,8 +3,7 @@
 Settings mysettings;
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  LEDs::setup_leds();
   Serial.begin(9600);
   init_wifi();
 }
@@ -14,4 +13,5 @@ void loop() {
     Web::server.handleClient();
   }
   handle_wifi();
+  LEDs::handle_leds(); // handles traffic light
 }

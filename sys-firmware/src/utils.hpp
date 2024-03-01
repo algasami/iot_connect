@@ -34,3 +34,11 @@ extern bool wifi_connected, server_created;
 
 inline const char *get_SSID() { return WiFi.SSID().c_str(); }
 inline const char *get_local_IP() { return WiFi.localIP().toString().c_str(); }
+
+namespace LEDs {
+constexpr uint8_t RED_OUT = D3;
+constexpr uint8_t YELLOW_OUT = D2;
+constexpr uint8_t GREEN_OUT = D1;
+void setup_leds();
+void handle_leds();
+} // namespace LEDs
