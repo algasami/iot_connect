@@ -10,6 +10,8 @@
 void init_wifi();
 void handle_wifi();
 
+void handle_moisture();
+
 struct Router {
   char ssid[50];
   char password[50];
@@ -21,6 +23,7 @@ struct Settings {
   bool update_on_change = false;
 };
 constexpr size_t ROUTER_SIZE = 2;
+constexpr uint8_t MOISTURE_PIN = A0;
 
 extern Settings mysettings;
 
@@ -31,3 +34,5 @@ extern ESP8266WebServer server;
 extern const char discord_hook[];
 extern bool wifi_connected, server_created;
 } // namespace Web
+
+extern uint32_t moisture_value;
