@@ -1,10 +1,10 @@
 #include "utils.hpp"
 
-Settings mysettings;
+Settings mysettings{.update_on_change = false, .update_sec = 30};
 
 void setup() {
-  LEDs::setup_leds();
   Serial.begin(9600);
+  Serial.println("Starting...");
   init_wifi();
 }
 
@@ -13,5 +13,4 @@ void loop() {
     Web::server.handleClient();
   }
   handle_wifi();
-  LEDs::handle_leds(); // handles traffic light
 }

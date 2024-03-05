@@ -1,5 +1,6 @@
 #include "utils.hpp"
 #include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 namespace Web {
 ESP8266WiFiMulti wifi_multi;
@@ -21,13 +22,6 @@ void clean_server();
 void send_discord(const char *name, const char *content);
 
 void handle_wifi() {
-  static uint32_t last = millis();
-  uint32_t now = millis();
-  if (now - last > 1000) {
-    last = now;
-  } else {
-    return;
-  }
   if (wifi_multi.run() != WL_CONNECTED) {
     if (wifi_connected) {
       wifi_connected = false;
@@ -37,6 +31,7 @@ void handle_wifi() {
   }
   if (!wifi_connected) {
     wifi_connected = true;
+    Serial.println("Wifi connected!");
     create_server();
     server_created = true;
   }
@@ -73,26 +68,27 @@ void create_server() {
   {
     char msg_buffer[100];
     sprintf(msg_buffer,
-            "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n", "Error!",
-            get_local_IP());
+            "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
+            WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
     send_discord("Moisture Monitor 8266 - system", msg_buffer);
   }
 }
 
 void clean_server() { server.close(); }
 
-HTTPClient client;
-WiFiClient wificlient;
+WiFiClientSecure sec_client;
+HTTPClient http;
 void send_discord(const char *name, const char *content) {
   char send_buffer[200];
   JsonDocument data;
   data["username"] = name;
   data["content"] = content;
-  serializeJson(data, send_buffer);
-  Serial.println(send_buffer);
-  client.begin(wificlient, discord_hook);
-  client.addHeader("Content-Type", "application/json");
-  int code = client.POST(send_buffer);
-  Serial.println(code);
-  client.end();
+  serializeJsonPretty(data, send_buffer);
+  sec_client.setInsecure();
+  http.begin(sec_client, discord_hook);
+
+  http.addHeader("Content-Type", "application/json");
+  http.POST(send_buffer);
+
+  http.end();
 }
