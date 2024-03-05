@@ -5,7 +5,6 @@
 #include <ArduinoJson.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
 
 void init_wifi();
 void handle_wifi();
@@ -24,15 +23,14 @@ struct Router {
 struct Settings {
   uint32_t discord_update_sec = 30;
 };
-constexpr size_t ROUTER_SIZE = 2;
+constexpr size_t ROUTER_SIZE = 3;
 constexpr uint8_t MOISTURE_PIN = A0;
 
 extern Settings mysettings;
 
 namespace Web {
-extern ESP8266WiFiMulti wifi_multi;
-extern Router routers[ROUTER_SIZE];
 extern ESP8266WebServer server;
+extern Router routers[ROUTER_SIZE];
 extern const char discord_hook[];
 extern bool wifi_connected, server_created;
 } // namespace Web

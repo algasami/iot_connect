@@ -1,5 +1,7 @@
 #include "utils.hpp"
 #include <ESP8266HTTPClient.h>
+#include <ESP8266WiFiMulti.h>
+#include <LittleFS.h>
 #include <WiFiClientSecure.h>
 
 namespace Web {
@@ -11,6 +13,7 @@ bool wifi_connected = false, server_created = false;
 using namespace Web;
 
 void init_wifi() {
+  WiFi.mode(WIFI_STA);
   Serial.println("Begin wifi initialization");
   for (size_t i = 0; i < ROUTER_SIZE; i++) {
     wifi_multi.addAP(routers[i].ssid, routers[i].password);
@@ -21,8 +24,15 @@ void create_server();
 void clean_server();
 
 void handle_wifi() {
+  static uint32_t last = millis();
+  uint32_t now = millis();
+  if (now - last < 1000) {
+    return;
+  }
+  last = now;
   if (wifi_multi.run() != WL_CONNECTED) {
     if (wifi_connected) {
+      Serial.println("Wifi disconnected!");
       wifi_connected = false;
       clean_server();
     }
@@ -32,6 +42,7 @@ void handle_wifi() {
     wifi_connected = true;
     Serial.println("Wifi connected!");
     create_server();
+    Serial.println("Server created!");
     server_created = true;
   }
 }
@@ -43,22 +54,30 @@ void handle_wifi() {
  *
  * Caveat: the settings are not validated. We will need to add a schema for it.
  */
+char buffer[2000];
 void create_server() {
-  server.begin();
-  server.on("/", HTTP_GET, []() {
-    char buffer[1000];
-    sprintf(buffer,
-            "<!DOCTYPE html><html><head><title>Moisture Monitor</title></head>"
-            "<body><h1>Moisture Monitor</h1><p>Moisture: %d</p><form "
-            "action=\"/settings\" method=\"post\"><label "
-            "for=\"discord_update_sec\">"
-            "Discord Update Sec:</label><input type=\"number\" "
-            "id=\"discord_update_sec\" "
-            "name=\"discord_update_sec\" value=\"%d\"><br><input "
-            "type=\"submit\" value=\"Submit\"></form></body></html>",
-            moisture_value, mysettings.discord_update_sec);
+  if (LittleFS.begin()) {
+    Serial.println("LittleFS mounted");
+  } else {
+    Serial.println("LittleFS failed to mount");
+    return;
+  }
 
-    server.send(200, "text/html", buffer);
+  server.on("/", HTTP_GET, []() {
+    Serial.println("got request");
+    if (LittleFS.exists("/index.html")) {
+      Serial.println("sending index.html");
+
+      // read /index.html into a buffer
+      File file = LittleFS.open("/index.html", "r");
+      if (file.available()) {
+        server.streamFile(file, "text/html");
+      }
+      file.close();
+    } else {
+      Serial.println("sending 404");
+      server.send(404, "text/plain", "404: Not Found");
+    }
   });
   server.on("/settings", HTTP_POST, []() {
     Serial.println("got settings");
@@ -86,30 +105,40 @@ void create_server() {
                   "Back</button></body></html>");
     }
   });
+
+  server.on("/moisture", HTTP_GET, []() {
+    sprintf(buffer, "%d", moisture_value);
+    server.send(200, "text/plain", buffer);
+  });
+
+  server.begin();
+
+  Serial.printf("SETUP heap size: %u\n", ESP.getFreeHeap());
+
   {
-    char msg_buffer[100];
-    sprintf(msg_buffer,
-            "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
+    sprintf(buffer, "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
             WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-    send_discord("Moisture Monitor 8266 - system", msg_buffer);
+    send_discord("Moisture Monitor 8266 - system", buffer);
   }
 }
 
-void clean_server() { server.close(); }
+void clean_server() {
+  server.close();
+  LittleFS.end();
+}
 
 WiFiClientSecure sec_client;
 HTTPClient http;
 void send_discord(const char *name, const char *content) {
-  char send_buffer[200];
   JsonDocument data;
   data["username"] = name;
   data["content"] = content;
-  serializeJsonPretty(data, send_buffer);
+  serializeJsonPretty(data, buffer);
   sec_client.setInsecure();
   http.begin(sec_client, discord_hook);
 
   http.addHeader("Content-Type", "application/json");
-  http.POST(send_buffer);
+  http.POST(buffer);
 
   http.end();
 }

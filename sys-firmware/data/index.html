@@ -1,0 +1,103 @@
+<!--
+    this html file has a form with settings for esp8266
+    and a submit button with POST to /settings
+    and a nice css
+    it supports GET moisture value from /moisture
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP8266</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            background-color: #2a2a2a;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2d2d2d;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        .container h1 {
+            text-align: center;
+        }
+        .container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .container form label {
+            margin-bottom: 10px;
+        }
+        .container form input {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #675858;
+            border-radius: 5px;
+        }
+        .container form button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #316f33;
+            cursor: pointer;
+        }
+        .container form button:hover {
+            background-color: #235126;
+        }
+        #moisture-chart {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let moisture_queue = [];
+        function pushMoisture(value) {
+            moisture_queue.push(value);
+            if (moisture_queue.length > 10) {
+                moisture_queue.shift();
+            }
+        }
+        function getMoisture() {
+            fetch('/moisture')
+                .then(res => res.text())
+                .then(strbod => {
+                    const bod = Number(strbod);
+                    pushMoisture(bod);
+                    document.getElementById('moisture-value').innerText = `Moisture: ${bod}`;
+                    // make a line chart from scratch
+                    const canvas = document.getElementById('moisture-chart');
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const barWidth = canvas.width / moisture_queue.length;
+                    for (let i = 0; i < moisture_queue.length; i++) {
+                        const x = i * barWidth;
+                        const y = canvas.height - (moisture_queue[i] / 1024 * canvas.height);
+                        // 0 blue 1024 red
+                        ctx.fillStyle = `rgb(${moisture_queue[i]*255/1024}, 0, 0)`;
+                        ctx.fillRect(x, y, barWidth - 4, canvas.height - y);
+                    }
+                });
+        }
+        setInterval(getMoisture, 1000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>ESP8266</h1>
+        <div id="moisture-value"></div>
+        <canvas id="moisture-chart"></canvas>
+        <form action="/settings" method="POST">
+            <label for="discord_update_sec" >Discord Update Interval (seconds)</label>
+            <input type="number" name="discord_update_sec" id="discord_update_sec" value="4">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</body>
+
+</html>

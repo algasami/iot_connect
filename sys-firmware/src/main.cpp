@@ -9,9 +9,20 @@ void setup() {
 }
 
 void loop() {
+
   if (Web::server_created) {
     Web::server.handleClient();
   }
+
   handle_wifi();
   handle_moisture();
+
+  static uint32_t last = millis();
+  uint32_t now = millis();
+  if (now - last < 1000) {
+    return;
+  } else {
+    last = now;
+    Serial.printf("Free heap: %d\n", ESP.getFreeHeap());
+  }
 }
