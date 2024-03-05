@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-Settings mysettings{.update_sec = 5};
+Settings mysettings{.discord_update_sec = 5};
 
 void setup() {
   Serial.begin(9600);

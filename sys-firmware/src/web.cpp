@@ -50,11 +50,13 @@ void create_server() {
     sprintf(buffer,
             "<!DOCTYPE html><html><head><title>Moisture Monitor</title></head>"
             "<body><h1>Moisture Monitor</h1><p>Moisture: %d</p><form "
-            "action=\"/settings\" method=\"post\"><label for=\"update_sec\">"
-            "Update Sec:</label><input type=\"number\" id=\"update_sec\" "
-            "name=\"update_sec\" value=\"%d\"><br><input "
+            "action=\"/settings\" method=\"post\"><label "
+            "for=\"discord_update_sec\">"
+            "Discord Update Sec:</label><input type=\"number\" "
+            "id=\"discord_update_sec\" "
+            "name=\"discord_update_sec\" value=\"%d\"><br><input "
             "type=\"submit\" value=\"Submit\"></form></body></html>",
-            moisture_value, mysettings.update_sec);
+            moisture_value, mysettings.discord_update_sec);
 
     server.send(200, "text/html", buffer);
   });
@@ -62,12 +64,12 @@ void create_server() {
     Serial.println("got settings");
     // ! ugly code (I NEED TO FIX THIS!!! maybe via SCHEMA)
     bool success = true;
-    if (server.hasArg("update_sec")) {
-      int32_t og_update = server.arg("update_sec").toInt();
+    if (server.hasArg("discord_update_sec")) {
+      int32_t og_update = server.arg("discord_update_sec").toInt();
       if (og_update < 0) {
         success = false;
       } else {
-        mysettings.update_sec = og_update;
+        mysettings.discord_update_sec = og_update;
       }
     }
     if (success) {

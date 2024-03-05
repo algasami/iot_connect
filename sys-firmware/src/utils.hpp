@@ -20,7 +20,7 @@ struct Router {
 
 // ! How do we add a schema for the settings?
 struct Settings {
-  uint32_t update_sec = 30;
+  uint32_t discord_update_sec = 30;
 };
 constexpr size_t ROUTER_SIZE = 2;
 constexpr uint8_t MOISTURE_PIN = A0;
