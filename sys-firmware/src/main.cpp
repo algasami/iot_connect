@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-Settings mysettings{.update_sec = 5, .update_on_change = false};
+Settings mysettings{.update_sec = 5};
 
 void setup() {
   Serial.begin(9600);
