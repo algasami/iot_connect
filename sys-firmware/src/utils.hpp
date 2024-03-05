@@ -9,6 +9,7 @@
 
 void init_wifi();
 void handle_wifi();
+void send_discord(const char *name, const char *content);
 
 void handle_moisture();
 
@@ -20,7 +21,6 @@ struct Router {
 // ! How do we add a schema for the settings?
 struct Settings {
   uint32_t update_sec = 30;
-  bool update_on_change = false;
 };
 constexpr size_t ROUTER_SIZE = 2;
 constexpr uint8_t MOISTURE_PIN = A0;

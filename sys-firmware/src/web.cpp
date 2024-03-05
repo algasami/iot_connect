@@ -19,7 +19,6 @@ void init_wifi() {
 
 void create_server();
 void clean_server();
-void send_discord(const char *name, const char *content);
 
 void handle_wifi() {
   if (wifi_multi.run() != WL_CONNECTED) {
@@ -47,23 +46,43 @@ void handle_wifi() {
 void create_server() {
   server.begin();
   server.on("/", HTTP_GET, []() {
-    char buffer[200];
-    JsonDocument res;
-    res["moisture"] = 1.0;
-    res["approved"] = true;
-    serializeJson(res, buffer);
-    server.send(200, "application/json", buffer);
+    char buffer[1000];
+    sprintf(buffer,
+            "<!DOCTYPE html><html><head><title>Moisture Monitor</title></head>"
+            "<body><h1>Moisture Monitor</h1><p>Moisture: %d</p><form "
+            "action=\"/settings\" method=\"post\"><label for=\"update_sec\">"
+            "Update Sec:</label><input type=\"number\" id=\"update_sec\" "
+            "name=\"update_sec\" value=\"%d\"><br><input "
+            "type=\"submit\" value=\"Submit\"></form></body></html>",
+            moisture_value, mysettings.update_sec);
+
+    server.send(200, "text/html", buffer);
   });
   server.on("/settings", HTTP_POST, []() {
+    Serial.println("got settings");
     // ! ugly code (I NEED TO FIX THIS!!! maybe via SCHEMA)
+    bool success = true;
     if (server.hasArg("update_sec")) {
-      mysettings.update_sec = server.arg("update_sec").toInt();
+      int32_t og_update = server.arg("update_sec").toInt();
+      if (og_update < 0) {
+        success = false;
+      } else {
+        mysettings.update_sec = og_update;
+      }
     }
-    if (server.hasArg("update_on_change")) {
-      mysettings.update_on_change =
-          strcmp(server.arg("update_on_change").c_str(), "true") ? false : true;
+    if (success) {
+      server.send(201, "text/html",
+                  "<!DOCTYPE html><html><head><title>MM Update "
+                  "Success</title></head><body><h1>Success!</h1><button "
+                  "onclick=\"window.history.back()\">Go "
+                  "Back</button></body></html>");
+    } else {
+      server.send(400, "text/html",
+                  "<!DOCTYPE html><html><head><title>MM Update "
+                  "Failure</title></head><body><h1>Failure!</h1><button "
+                  "onclick=\"window.history.back()\">Go "
+                  "Back</button></body></html>");
     }
-    server.send(201, "text/plain", "success");
   });
   {
     char msg_buffer[100];
