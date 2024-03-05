@@ -13,6 +13,8 @@ void send_discord(const char *name, const char *content);
 
 void handle_moisture();
 
+void display_number(uint32_t number);
+
 struct Router {
   char ssid[50];
   char password[50];
