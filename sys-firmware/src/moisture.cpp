@@ -10,12 +10,17 @@ constexpr uint32_t EPSILON = 50;
  * 800 and below - wet
  */
 void handle_moisture() {
+  static uint32_t base_last = millis();
+  uint32_t now = millis();
+  if (now - base_last < 200) {
+    return;
+  }
+  base_last = now;
   moisture_value = analogRead(MOISTURE_PIN);
 
   // discord push
   static uint32_t last_moisture = 0;
   static uint32_t last = millis();
-  uint32_t now = millis();
   if (now - last < mysettings.discord_update_sec * 1000) {
     return;
   }
