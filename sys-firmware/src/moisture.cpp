@@ -17,6 +17,7 @@ void handle_moisture() {
   }
   base_last = now;
   moisture_value = analogRead(MOISTURE_PIN);
+  display_number(moisture_value);
 
   // discord push
   static uint32_t last_moisture = 0;
@@ -24,7 +25,6 @@ void handle_moisture() {
   if (now - last < mysettings.discord_update_sec * 1000) {
     return;
   }
-  display_number(moisture_value);
   last = now;
   if (abs(static_cast<int32_t>(moisture_value - last_moisture)) > EPSILON) {
     char buffer[50];
