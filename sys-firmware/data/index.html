@@ -64,18 +64,26 @@
             }
         }
         function getMoisture() {
-            fetch('/moisture')
+            fetch('/status')
                 .then(res => res.json())
                 .then(ob => {
                     const moisture = Number(ob.moisture);
                     const free_heap = Number(ob.free_heap);
-                    pushMoisture(bod);
-                    document.getElementById('moisture-value').innerText = `Moisture: ${bod}`;
+                    pushMoisture(moisture);
+                    document.getElementById('moisture-value').innerText = `Moisture: ${moisture}`;
                     document.getElementById('free-heap-value').innerText = `Free Heap: ${free_heap}`;
 
                     const canvas = document.getElementById('moisture-chart');
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // draw moisture line (800)
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height - 800 / 1024 * canvas.height);
+                    ctx.lineTo(canvas.width, canvas.height - 800 / 1024 * canvas.height);
+                    ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                    ctx.stroke();
+
                     const barWidth = canvas.width / moisture_queue.length;
                     for (let i = 0; i < moisture_queue.length; i++) {
                         const x = i * barWidth;
