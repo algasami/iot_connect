@@ -65,12 +65,14 @@
         }
         function getMoisture() {
             fetch('/moisture')
-                .then(res => res.text())
-                .then(strbod => {
-                    const bod = Number(strbod);
+                .then(res => res.json())
+                .then(ob => {
+                    const moisture = Number(ob.moisture);
+                    const free_heap = Number(ob.free_heap);
                     pushMoisture(bod);
                     document.getElementById('moisture-value').innerText = `Moisture: ${bod}`;
-                    // make a line chart from scratch
+                    document.getElementById('free-heap-value').innerText = `Free Heap: ${free_heap}`;
+
                     const canvas = document.getElementById('moisture-chart');
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -78,7 +80,6 @@
                     for (let i = 0; i < moisture_queue.length; i++) {
                         const x = i * barWidth;
                         const y = canvas.height - (moisture_queue[i] / 1024 * canvas.height);
-                        // 0 blue 1024 red
                         ctx.fillStyle = `rgb(${moisture_queue[i]*255/1024}, 0, 0)`;
                         ctx.fillRect(x, y, barWidth - 4, canvas.height - y);
                     }
@@ -91,6 +92,7 @@
     <div class="container">
         <h1>ESP8266</h1>
         <div id="moisture-value"></div>
+        <div id="free-heap-value"></div>
         <canvas id="moisture-chart"></canvas>
         <form action="/settings" method="POST">
             <label for="discord_update_sec" >Discord Update Interval (seconds)</label>
