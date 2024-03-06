@@ -54,7 +54,6 @@ void handle_wifi() {
  *
  * Caveat: the settings are not validated. We will need to add a schema for it.
  */
-char buffer[2000];
 void create_server() {
   if (LittleFS.begin()) {
     Serial.println("LittleFS mounted");
@@ -107,6 +106,7 @@ void create_server() {
   });
 
   server.on("/moisture", HTTP_GET, []() {
+    char buffer[50];
     sprintf(buffer, "%d", moisture_value);
     server.send(200, "text/plain", buffer);
   });
@@ -116,6 +116,7 @@ void create_server() {
   Serial.printf("SETUP heap size: %u\n", ESP.getFreeHeap());
 
   {
+    char buffer[50];
     sprintf(buffer, "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
             WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
     send_discord("Moisture Monitor 8266 - system", buffer);
@@ -130,6 +131,7 @@ void clean_server() {
 WiFiClientSecure sec_client;
 HTTPClient http;
 void send_discord(const char *name, const char *content) {
+  char buffer[400];
   JsonDocument data;
   data["username"] = name;
   data["content"] = content;
