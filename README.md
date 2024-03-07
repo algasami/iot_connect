@@ -2,7 +2,9 @@
 
 This project is meant for a session.
 
-## ALWAYS USE PULL REQUEST TO CONTRIBUTE! THE OWNER IS CAREFUL WITH ALL THE COMMITS
+## Contribution
+
+Contributions via Pull Requests are currently unavailable in favor of a monolithic development approach.
 
 ## Project Layout
 
