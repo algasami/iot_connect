@@ -1,3 +1,4 @@
+#include "sheets.hpp"
 #include "utils.hpp"
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WiFiMulti.h>
@@ -119,6 +120,16 @@ void create_server() {
         data["free_heap"] = ESP.getFreeHeap();
         serializeJson(data, buffer);
         server.send(200, "application/json", buffer);
+    });
+
+    server.on("/music", HTTP_POST, []() {
+        Serial.println("got music");
+        play_music(LITTLE_STAR);
+        server.send(201, "text/html",
+                    "<!DOCTYPE html><html><head><title>MM Music "
+                    "Success</title></head><body><h1>Playing Little Star!</h1><button "
+                    "onclick=\"window.history.back()\">Go "
+                    "Back</button></body></html>");
     });
 
     server.begin();

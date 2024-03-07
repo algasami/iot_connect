@@ -22,10 +22,9 @@ struct Router {
     char password[50];
 };
 
-struct Note {
-    uint32_t frequency; // -1 is stop
-    uint32_t length;    // 1, 2, 3
-};
+// songs
+
+struct Note;
 void play_music(Note const *music_sheet);
 
 // ! How do we add a schema for the settings?
