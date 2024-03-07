@@ -32,6 +32,7 @@ void handle_wifi(uint32_t now) {
     if (wifi_multi.run() != WL_CONNECTED) {
         if (wifi_connected) {
             Serial.println("Wifi disconnected!");
+            buzz(FREQ_WIFI_DISCONNECT, 1000);
             wifi_connected = false;
             clean_server();
         }
@@ -43,6 +44,7 @@ void handle_wifi(uint32_t now) {
         create_server();
         Serial.println("Server created!");
         server_created = true;
+        buzz(FREQ_SERVER_CREATED, 500);
     }
 }
 
@@ -88,7 +90,14 @@ void create_server() {
                 mysettings.discord_update_sec = og_update;
             }
         }
+        if (server.hasArg("buzz_on_change") && success) {
+            // only update this if the previous one was successful
+            // because we should abid by the as-is principle
+            mysettings.buzz_on_change = server.arg("buzz_on_change") == "on";
+            Serial.println(mysettings.buzz_on_change);
+        }
         if (success) {
+            buzz(FREQ_SETTINGS_UPDATE, 500);
             server.send(201, "text/html",
                         "<!DOCTYPE html><html><head><title>MM Update "
                         "Success</title></head><body><h1>Success!</h1><button "
@@ -116,8 +125,7 @@ void create_server() {
 
     {
         char buffer[100];
-        sprintf(buffer,
-                "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
+        sprintf(buffer, "Moisture Monitor Online!\n```\nSSID:%s\nLOIP:%s\n```\n",
                 WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
         send_discord("Moisture Monitor 8266 - system", buffer);
     }

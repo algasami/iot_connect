@@ -7,10 +7,9 @@
 #include <ESP8266WiFi.h>
 
 void init_wifi();
-inline void init_buzzer();
+void init_buzzer();
 void handle_wifi(uint32_t now);
-void handle_buzzer(uint32_t now);
-inline void buzz();
+void buzz(uint32_t, uint32_t);
 void send_discord(const char *name, const char *content);
 
 void handle_moisture(uint32_t now);
@@ -24,10 +23,18 @@ struct Router {
 
 // ! How do we add a schema for the settings?
 struct Settings {
-    uint32_t discord_update_sec = 30;
+    uint32_t discord_update_sec;
+    bool buzz_on_change;
 };
 constexpr size_t ROUTER_SIZE = 3;
 constexpr uint8_t MOISTURE_PIN = A0;
+
+constexpr uint32_t FREQ_MOISTURE = 261;        // Middle C
+constexpr uint32_t FREQ_SERVER_CREATED = 293;  // D
+constexpr uint32_t FREQ_WIFI_DISCONNECT = 329; // E
+constexpr uint32_t FREQ_SETTINGS_UPDATE = 349; // F
+
+constexpr bool DEBUG_DISABLE_BUZZER = false;
 
 extern Settings mysettings;
 

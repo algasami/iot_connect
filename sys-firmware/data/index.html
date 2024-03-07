@@ -69,8 +69,10 @@
                     const moisture = Number(ob.moisture);
                     const free_heap = Number(ob.free_heap);
                     pushMoisture(moisture);
-                    document.getElementById('moisture-value').innerText = `Moisture: ${moisture}`;
-                    document.getElementById('free-heap-value').innerText = `Free Heap: ${free_heap}`;
+                    document.getElementById('moisture-value')
+                            .innerText = `Moisture: ${moisture}`;
+                    document.getElementById('free-heap-value')
+                            .innerText = `Free Heap: ${free_heap}`;
 
                     const canvas = document.getElementById('moisture-chart');
                     const ctx = canvas.getContext('2d');
@@ -79,14 +81,17 @@
                     // draw moisture line (800)
                     ctx.beginPath();
                     ctx.moveTo(0, canvas.height - 800 / 1024 * canvas.height);
-                    ctx.lineTo(canvas.width, canvas.height - 800 / 1024 * canvas.height);
+                    ctx.lineTo(
+                        canvas.width,
+                        canvas.height - 800 / 1024 * canvas.height);
                     ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
                     ctx.stroke();
 
                     const barWidth = canvas.width / moisture_queue.length;
                     for (let i = 0; i < moisture_queue.length; i++) {
                         const x = i * barWidth;
-                        const y = canvas.height - (moisture_queue[i] / 1024 * canvas.height);
+                        const y = canvas.height -
+                            (moisture_queue[i] / 1024 * canvas.height);
                         ctx.fillStyle = `rgb(${moisture_queue[i]*255/1024}, 0, 0)`;
                         ctx.fillRect(x, y, barWidth - 4, canvas.height - y);
                     }
@@ -103,15 +108,22 @@
         <canvas id="moisture-chart"></canvas>
         <hr/>
         <form action="/settings" method="POST">
-            <label for="discord_update_sec" >Discord Update Interval (seconds)</label>
-            <input type="number" name="discord_update_sec" id="discord_update_sec" value="4">
+            <label for="discord_update_sec" >
+                Discord Update Interval (seconds)
+            </label>
+            <input type="number" name="discord_update_sec"
+            id="discord_update_sec" value="2">
+            <label for="buzz_on_change">Buzz on Change</label>
+            <input type="checkbox" name="buzz_on_change" id="buzz_on_change">
             <button type="submit">Save</button>
         </form>
         <hr/>
         <h2>What is this?</h2>
         <p>
-            This is a simple website hosted on an _ESP8266 microcontroller_, which is used in my presentation. To learn
-            more about this project, please visit <a href="https://algasami.github.io/posts/20240305-esp">my page</a>.
+            This is a simple website hosted on an _ESP8266 microcontroller_,
+            which is used in my presentation. To learn more about this project,
+            please visit
+            <a href="https://algasami.github.io/posts/20240305-esp">my page</a>.
         </p>
     </div>
 </body>

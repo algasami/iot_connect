@@ -1,7 +1,7 @@
 #include "utils.hpp"
 
 uint32_t moisture_value;
-constexpr uint32_t EPSILON = 50;
+constexpr uint32_t EPSILON = 30;
 
 /**
  *
@@ -26,6 +26,9 @@ void handle_moisture(uint32_t now) {
     }
     last = now;
     if (abs(static_cast<int32_t>(moisture_value - last_moisture)) > EPSILON) {
+        if (mysettings.buzz_on_change) {
+            buzz(FREQ_MOISTURE, 500);
+        }
         char buffer[50];
         last_moisture = moisture_value;
         sprintf(buffer, "```\nA0: %d\n```\n", moisture_value);

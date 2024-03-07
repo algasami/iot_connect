@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-Settings mysettings{.discord_update_sec = 2};
+Settings mysettings{.discord_update_sec = 2, .buzz_on_change = false};
 
 void setup() {
     Serial.begin(9600);
@@ -17,5 +17,4 @@ void loop() {
     uint32_t now = millis();
     handle_wifi(now);
     handle_moisture(now);
-    handle_buzzer(now);
 }
