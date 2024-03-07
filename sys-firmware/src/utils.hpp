@@ -7,10 +7,13 @@
 #include <ESP8266WiFi.h>
 
 void init_wifi();
-void handle_wifi();
+inline void init_buzzer();
+void handle_wifi(uint32_t now);
+void handle_buzzer(uint32_t now);
+inline void buzz();
 void send_discord(const char *name, const char *content);
 
-void handle_moisture();
+void handle_moisture(uint32_t now);
 
 void display_number(uint32_t number);
 

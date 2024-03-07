@@ -9,9 +9,8 @@ constexpr uint32_t EPSILON = 50;
  * 1023-800 - half dry
  * 800 and below - wet
  */
-void handle_moisture() {
+void handle_moisture(uint32_t now) {
     static uint32_t base_last = millis();
-    uint32_t now = millis();
     if (now - base_last < 200) {
         return;
     }

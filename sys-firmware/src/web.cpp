@@ -23,9 +23,8 @@ void init_wifi() {
 void create_server();
 void clean_server();
 
-void handle_wifi() {
+void handle_wifi(uint32_t now) {
     static uint32_t last = millis();
-    uint32_t now = millis();
     if (now - last < 1000) {
         return;
     }
