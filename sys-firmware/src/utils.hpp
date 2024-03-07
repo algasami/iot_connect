@@ -15,13 +15,13 @@ void handle_moisture();
 void display_number(uint32_t number);
 
 struct Router {
-  char ssid[50];
-  char password[50];
+    char ssid[50];
+    char password[50];
 };
 
 // ! How do we add a schema for the settings?
 struct Settings {
-  uint32_t discord_update_sec = 30;
+    uint32_t discord_update_sec = 30;
 };
 constexpr size_t ROUTER_SIZE = 3;
 constexpr uint8_t MOISTURE_PIN = A0;
