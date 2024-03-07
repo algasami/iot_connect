@@ -17,4 +17,5 @@ void loop() {
     uint32_t now = millis();
     handle_wifi(now);
     handle_moisture(now);
+    handle_music(now);
 }

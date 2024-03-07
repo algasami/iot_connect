@@ -8,6 +8,7 @@
 
 void init_wifi();
 void init_buzzer();
+void handle_music(uint32_t now);
 void handle_wifi(uint32_t now);
 void buzz(uint32_t, uint32_t);
 void send_discord(const char *name, const char *content);
@@ -20,6 +21,12 @@ struct Router {
     char ssid[50];
     char password[50];
 };
+
+struct Note {
+    uint32_t frequency; // -1 is stop
+    uint32_t length;    // 1, 2, 3
+};
+void play_music(Note const *music_sheet);
 
 // ! How do we add a schema for the settings?
 struct Settings {
