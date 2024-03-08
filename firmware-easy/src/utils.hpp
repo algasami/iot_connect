@@ -50,3 +50,5 @@ extern bool wifi_connected, server_created;
 } // namespace Web
 
 extern uint32_t moisture_value;
+
+// extern是宣告一個符號，不是宣告一個變數

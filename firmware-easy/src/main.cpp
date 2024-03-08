@@ -3,6 +3,7 @@
 Settings mysettings{.buzz_on_change = false};
 
 void setup() {
+	// 設定baud速率
 	Serial.begin(9600);
 	Serial.println("Starting...");
 	init_buzzer();
@@ -11,9 +12,8 @@ void setup() {
 
 void loop() {
 	uint32_t now = millis();
-	if (Web::server_created) {
-		Web::server.handleClient();
-	}
+	// WiFi 掃描
 	handle_wifi(now);
+	// 濕度感測
 	handle_moisture(now);
 }

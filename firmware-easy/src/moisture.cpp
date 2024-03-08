@@ -16,10 +16,11 @@ void handle_moisture(uint32_t now) {
 	}
 	base_last = now;
 	moisture_value = analogRead(MOISTURE_PIN);
-	display_number(moisture_value);
+	display_number(moisture_value); // 在LED上顯示濕度數值
 
 	static uint32_t last_moisture = 0;
 	if (abs(static_cast<int32_t>(moisture_value - last_moisture)) > EPSILON) {
+		// 超過閥值，發送資料
 		if (mysettings.buzz_on_change) {
 			buzz(FREQ_MOISTURE, 500);
 		}

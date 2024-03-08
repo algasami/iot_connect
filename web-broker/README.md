@@ -1,36 +1,19 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Web-Broker
 
-## Getting Started
+## Next.js 是一個框架：
 
-First, run the development server:
+- 同時建立伺服器與客戶端
+- 熱插拔功能
+- 混合式渲染機制
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## POST, GET 是什麼?
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- POST: 新增資料 (Create)
+- GET: 讀取資料 (Read)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+其中 POST, GET 的差別在於，POST 會將資料放在 request body 中，而 GET 則是放在 URL 中，相對而言，
+POST 較為安全，因為資料不會被放在 URL 中，但是 GET 較為方便，因為資料可以被放在 URL 中，不需要另外的 request body。
+GET 也是最常見的 request method，因為它可以被瀏覽器緩存，而 POST 則不行。
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+除了上述的 request method 之外，還有 PUT, DELETE, PATCH 等等，這些 request method 也是用
+來操作資料的。
