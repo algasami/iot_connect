@@ -40,7 +40,6 @@ constexpr uint32_t FREQ_SETTINGS_UPDATE = 349; // F
 constexpr bool DEBUG_DISABLE_BUZZER = false;
 
 extern Settings mysettings;
-extern char remote_server_ip[50];
 extern bool remote_server_ip_set;
 
 namespace Web {

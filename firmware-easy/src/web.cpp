@@ -4,7 +4,6 @@
 #include <LittleFS.h>
 #include <WiFiClientSecure.h>
 
-char remote_server_ip[50];
 bool remote_server_ip_set = false;
 namespace Web {
 ESP8266WebServer server(80);
@@ -22,39 +21,6 @@ void init_wifi() {
 	}
 }
 
-void create_server() {
-	if (server_created) {
-		return;
-	}
-	server_created = true;
-	Serial.printf("Creating server on %s\n", WiFi.localIP().toString().c_str());
-	server.on("/", HTTP_GET, []() {
-		// this should send a webpage with a form to give me the remote server
-		// IP
-		server.send(200, "text/html",
-					"<form action=\"/submit\" method=\"post\">"
-					"<label for=\"ip\">IP:</label>"
-					"<input type=\"text\" id=\"ip\" name=\"ip\"><br><br>"
-					"<input type=\"submit\" value=\"Submit\">"
-					"</form>");
-	});
-	server.on("/submit", HTTP_POST, []() {
-		Serial.println("Submitted!");
-		strcpy(remote_server_ip, server.arg("ip").c_str());
-		Serial.println(remote_server_ip);
-		remote_server_ip_set = true;
-		server.send(200, "text/html", "Submitted!");
-	});
-	server.begin();
-}
-void close_server() {
-	if (!server_created) {
-		return;
-	}
-	server_created = false;
-	remote_server_ip_set = false;
-}
-
 void handle_wifi(uint32_t now) {
 	static uint32_t last = millis();
 	if (now - last < 1000) {
@@ -64,7 +30,7 @@ void handle_wifi(uint32_t now) {
 	if (wifi_multi.run() != WL_CONNECTED) {
 		if (wifi_connected) {
 			Serial.println("Wifi disconnected!");
-			close_server();
+			remote_server_ip_set = false;
 			buzz(FREQ_WIFI_DISCONNECT, 1000);
 			wifi_connected = false;
 		}
@@ -73,12 +39,12 @@ void handle_wifi(uint32_t now) {
 	if (!wifi_connected) {
 		wifi_connected = true;
 		Serial.println("Wifi connected!");
-		create_server();
+		remote_server_ip_set = true;
 		buzz(FREQ_SERVER_CREATED, 500);
 	}
 }
 
-WiFiClientSecure sec_client;
+WiFiClient client;
 HTTPClient http;
 void post_moisture(uint32_t moisture_value) {
 	if (!remote_server_ip_set) {
@@ -90,14 +56,10 @@ void post_moisture(uint32_t moisture_value) {
 	data["moisture"] = moisture_value;
 	serializeJsonPretty(data, buffer);
 
-	sec_client.setInsecure();
-
-	char site_buffer[100];
-	sprintf(site_buffer, "http://%s/submit", remote_server_ip);
-	http.begin(sec_client, site_buffer);
+	http.begin(client, "http://172.20.10.8:3000/api");
 
 	http.addHeader("Content-Type", "application/json");
-	http.POST(buffer);
+	Serial.println(http.POST(buffer));
 
 	http.end();
 }
